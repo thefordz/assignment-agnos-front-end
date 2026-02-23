@@ -14,7 +14,5 @@ export interface LivePatient {
   submittedAt?: number;
   lastUpdated: number;
 
-  editingField?: string;
-
-  values: PatientFormValues;
+  values?: Partial<PatientFormValues>;
 }

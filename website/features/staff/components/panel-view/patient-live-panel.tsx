@@ -10,6 +10,8 @@ interface PatientLivePanelProps {
 }
 
 export function PatientLivePanel({ patient }: PatientLivePanelProps) {
+  const hasName = patient?.values?.firstName || patient?.values?.lastName;
+
   if (!patient) {
     return (
       <div className="h-full rounded-xl border bg-muted/20 p-6 flex items-center justify-center">
@@ -28,16 +30,17 @@ export function PatientLivePanel({ patient }: PatientLivePanelProps) {
       <div className="border-b p-4 flex items-start justify-between gap-4 sticky top-0 bg-background z-10">
         <div className="min-w-0">
           <div className="font-semibold truncate">
-            {patient.values.firstName} {patient.values.lastName}
+            {hasName ? (
+              <span>
+                {patient.values?.firstName} {patient.values?.lastName}
+              </span>
+            ) : (
+              <span>{patient.name}</span>
+            )}
           </div>
           <div className="text-xs text-muted-foreground">
             ID: {patient.id} • Last update: {formatTimeAgo(patient.lastUpdated)}
           </div>
-          {patient.status === "active" && patient.editingField && (
-            <div className="text-xs text-green-700 mt-1">
-              Editing: {String(patient.editingField)}
-            </div>
-          )}
         </div>
 
         <PatientStatusBadge status={patient.status} />
@@ -45,7 +48,6 @@ export function PatientLivePanel({ patient }: PatientLivePanelProps) {
 
       <div className="p-4  w-full h-full  ">
         <PatientForm
-          key={patient.id}
           initialValues={patient.values}
           readOnly
           className="w-full pb-0 md:pb-4 mx-0  px-0 "

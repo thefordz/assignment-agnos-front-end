@@ -48,12 +48,6 @@ export const columns = (
       return (
         <div className="flex flex-col">
           <span className="font-medium">{patient.name}</span>
-
-          {patient.editingField && patient.status === "active" && (
-            <span className="text-xs text-green-600">
-              Editing: {patient.editingField}
-            </span>
-          )}
         </div>
       );
     },

@@ -54,7 +54,9 @@ export function DatePickerField<T extends FieldValues>({
                 className="justify-start font-normal"
                 disabled={disabled}
               >
-                {field.value ? field.value.toLocaleDateString() : placeholder}
+                {field.value
+                  ? new Date(field.value).toLocaleDateString()
+                  : placeholder}
               </Button>
             </PopoverTrigger>
             <PopoverContent

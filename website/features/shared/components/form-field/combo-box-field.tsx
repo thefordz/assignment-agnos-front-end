@@ -7,19 +7,12 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import {
-  Combobox,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxInput,
-  ComboboxEmpty,
-  ComboboxContent,
-} from "@/components/ui/combobox";
-import {
-  Item,
-  ItemContent,
-  ItemTitle,
-  ItemDescription,
-} from "@/components/ui/item";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  SelectContent,
+} from "@/components/ui/select";
 
 interface ComboBoxOption {
   value: string;
@@ -49,52 +42,32 @@ export function ComboBoxField<T extends FieldValues>({
   description,
   disabled,
   required,
-  noOption = "Not found",
 }: ComboBoxFieldProps<T>) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState }) => {
-        const selected =
-          options.find((option) => option.value === field.value) ?? null;
-
         return (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor={field.name}>
               {label} {required && <span className="text-red-500">*</span>}
             </FieldLabel>
-            <Combobox
-              disabled={disabled}
-              items={options}
-              itemToStringLabel={(option: ComboBoxOption) => option.label}
-              itemToStringValue={(option: ComboBoxOption) => option.value}
-              value={selected}
-              onValueChange={(option) => field.onChange(option?.value)}
-            >
-              <ComboboxInput
-                placeholder={placeholder}
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger
+                className="w-full max-w-full bg-background"
                 disabled={disabled}
-                className="bg-background"
-              />
-              <ComboboxContent>
-                <ComboboxEmpty>{noOption}</ComboboxEmpty>
-                <ComboboxList>
-                  {(option: ComboBoxOption) => (
-                    <ComboboxItem key={option.value} value={option}>
-                      <Item size="sm" className="p-0">
-                        <ItemContent>
-                          <ItemTitle className="whitespace-nowrap">
-                            {option.label}
-                          </ItemTitle>
-                          <ItemDescription>{option.subtitle}</ItemDescription>
-                        </ItemContent>
-                      </Item>
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
+              >
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             {description && <FieldDescription>{description}</FieldDescription>}
 

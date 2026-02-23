@@ -23,12 +23,17 @@ import {
 } from "@/components/ui/card";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+import { getSocket } from "@/lib/socket";
+import { useIDSession } from "@/features/shared/components/providers/id-session-provider";
+import { useDebounce } from "use-debounce";
 
 interface PatientFormProps {
-  initialValues?: PatientFormValues;
+  initialValues?: Partial<PatientFormValues>;
   readOnly?: boolean;
   className?: string;
   scroll?: boolean;
+  onChangeDraft?: (values: Partial<PatientFormValues>) => void;
   onSubmit?: () => void;
 }
 
@@ -36,33 +41,92 @@ export function PatientForm({
   initialValues,
   readOnly = false,
   className = "no-scrollbar  max-h-[50vh] overflow-y-auto ",
+  onChangeDraft,
   onSubmit,
 }: PatientFormProps) {
+  const { id } = useIDSession();
+
+  const defaultValues = {
+    firstName: initialValues?.firstName ?? "",
+    middleName: initialValues?.middleName ?? "",
+    lastName: initialValues?.lastName ?? "",
+    dateOfBirth: initialValues?.dateOfBirth ?? undefined,
+    gender: initialValues?.gender ?? undefined,
+    phoneNumber: initialValues?.phoneNumber ?? "",
+    email: initialValues?.email ?? "",
+    address: initialValues?.address ?? "",
+    preferredLanguage: initialValues?.preferredLanguage ?? "EN",
+    nationality: initialValues?.nationality ?? "",
+    emergencyContact: initialValues?.emergencyContact ?? {
+      name: initialValues?.emergencyContact?.name ?? "",
+      relationship: initialValues?.emergencyContact?.relationship ?? "",
+      phone: initialValues?.emergencyContact?.phone ?? "",
+    },
+    religion: initialValues?.religion ?? "PREFER_NOT_TO_SAY",
+  };
+
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(patientFormSchema),
-    defaultValues: {
-      firstName: initialValues?.firstName ?? "",
-      middleName: initialValues?.middleName ?? "",
-      lastName: initialValues?.lastName ?? "",
-      dateOfBirth: initialValues?.dateOfBirth ?? undefined,
-      gender: initialValues?.gender ?? undefined,
-      phoneNumber: initialValues?.phoneNumber ?? "",
-      email: initialValues?.email ?? "",
-      address: initialValues?.address ?? "",
-      preferredLanguage: initialValues?.preferredLanguage ?? "EN",
-      nationality: initialValues?.nationality ?? "",
-      emergencyContact: initialValues?.emergencyContact ?? {
-        name: "",
-        relationship: "",
-        phone: "",
-      },
-      religion: initialValues?.religion ?? "PREFER_NOT_TO_SAY",
-    },
+    defaultValues,
     mode: "onChange",
   });
 
-  async function handleSubmit(values: PatientFormValues) {
-    console.log(JSON.stringify(values, null, 2));
+  const watchedValues = form.watch();
+  const [debouncedValues] = useDebounce(watchedValues, 250);
+
+  useEffect(() => {
+    if (!readOnly) return;
+    if (!initialValues) return;
+
+    form.reset(defaultValues);
+  }, [initialValues, form, readOnly]);
+
+  //update status when open & close
+  useEffect(() => {
+    if (readOnly) return;
+
+    const socket = getSocket();
+
+    socket.emit("patient:open", {
+      id,
+      name: "New Patient",
+      status: "active",
+      createdAt: Date.now(),
+      lastUpdated: Date.now(),
+    });
+
+    return () => {
+      socket.emit("patient:close", {
+        id,
+        status: "inactive",
+        lastActivityAt: Date.now(),
+      });
+    };
+  }, [id, readOnly]);
+
+  //update values and save data as draft
+  useEffect(() => {
+    if (readOnly) return;
+
+    onChangeDraft?.(debouncedValues);
+    const socket = getSocket();
+
+    socket.emit("patient:update", {
+      id,
+      status: "active",
+      values: debouncedValues,
+      lastUpdated: Date.now(),
+    });
+  }, [form, id, readOnly, debouncedValues]);
+
+  async function handleSubmit() {
+    const socket = getSocket();
+
+    socket.emit("patient:submit", {
+      id,
+      status: "submitted",
+      submittedAt: Date.now(),
+    });
     onSubmit?.();
   }
 

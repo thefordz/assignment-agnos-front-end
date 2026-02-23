@@ -28,6 +28,7 @@ export function PatientListPanel({
       <div className="space-y-2 px-2 pb-2">
         {patients.map((p) => {
           const active = p.id === selectedId;
+          const hasName = p.values?.firstName || p.values?.lastName;
 
           return (
             <button
@@ -40,10 +41,16 @@ export function PatientListPanel({
                 active && "border-primary bg-muted/40 ring-1 ring-primary/20",
               )}
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex sm:flex-col items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="truncate font-medium">
-                    {p.values.firstName} {p.values.lastName}
+                    {hasName ? (
+                      <span>
+                        {p.values?.firstName} {p.values?.lastName}
+                      </span>
+                    ) : (
+                      <span>{p.name}</span>
+                    )}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     ID: {p.id}
@@ -55,13 +62,6 @@ export function PatientListPanel({
 
               <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                 <span>Last: {formatTimeAgo(p.lastUpdated)}</span>
-                {p.status === "active" && p.editingField ? (
-                  <span className="text-green-700">
-                    Editing: {String(p.editingField)}
-                  </span>
-                ) : (
-                  <span />
-                )}
               </div>
             </button>
           );

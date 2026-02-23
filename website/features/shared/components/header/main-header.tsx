@@ -4,11 +4,13 @@ import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
 import { DialogWrapper } from "../dialog-wrapper";
 import { PatientForm } from "@/features/patient/components/patient-form";
-import { initialValues } from "@/lib/dummy-data";
 import { FilePlus } from "lucide-react";
+
+import { PatientFormValues } from "@/features/patient/lib/validation";
 
 export function MainHeader() {
   const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<Partial<PatientFormValues>>({});
 
   function handleDialogOpen() {
     setOpen((prev) => !prev);
@@ -30,13 +32,13 @@ export function MainHeader() {
 
       <DialogWrapper
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={handleDialogOpen}
         title="Patient Form"
         description="Please fill in the patient information below."
       >
         <PatientForm
-          initialValues={initialValues}
-          className="no-scrollbar  max-h-[50vh] overflow-y-auto "
+          initialValues={draft}
+          onChangeDraft={setDraft}
           onSubmit={() => {
             setOpen(false);
           }}
