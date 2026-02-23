@@ -7,6 +7,7 @@ import { PatientForm } from "@/features/patient/components/patient-form";
 import { FilePlus } from "lucide-react";
 
 import { PatientFormValues } from "@/features/patient/lib/validation";
+import Link from "next/link";
 
 export function MainHeader() {
   const [open, setOpen] = useState(false);
@@ -21,10 +22,13 @@ export function MainHeader() {
       <header className="h-16 w-full border-b sticky top-0 z-50 bg-background">
         <div className="h-full w-full max-w-7xl mx-auto flex items-center justify-between px-3">
           <Logo />
-          <div>
+          <div className="flex items-center gap-3">
             <Button onClick={handleDialogOpen} variant={"secondary"}>
               <FilePlus />
               Register Now
+            </Button>
+            <Button asChild variant={"outline"}>
+              <Link href={"/staff"}>Staff Monitor</Link>
             </Button>
           </div>
         </div>
