@@ -22,17 +22,5 @@ export function PatientLiveDialog({ open, onOpenChange, patient }: Props) {
     >
       <PatientForm key={patient.id} initialValues={patient.values} readOnly />
     </DialogWrapper>
-
-    // <Dialog open={open} onOpenChange={onOpenChange}>
-    //   <DialogContent className="max-w-3xl w-full">
-    //     <DialogHeader>
-    //       <DialogTitle>
-    //         Live Patient — {patient.values.firstName} {patient.values.lastName}
-    //       </DialogTitle>
-    //     </DialogHeader>
-    //
-    //     <PatientForm key={patient.id} initialValues={patient.values} readOnly />
-    //   </DialogContent>
-    // </Dialog>
   );
 }
