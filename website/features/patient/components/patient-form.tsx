@@ -22,16 +22,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface PatientFormProps {
   initialValues?: PatientFormValues;
   readOnly?: boolean;
+  className?: string;
+  scroll?: boolean;
   onSubmit?: () => void;
 }
 
 export function PatientForm({
   initialValues,
   readOnly = false,
+  className = "no-scrollbar  max-h-[50vh] overflow-y-auto ",
   onSubmit,
 }: PatientFormProps) {
   const form = useForm<PatientFormValues>({
@@ -66,7 +70,7 @@ export function PatientForm({
 
   return (
     <form id="patient-form" onSubmit={form.handleSubmit(handleSubmit)}>
-      <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4 space-y-6">
+      <div className={cn("px-4 space-y-6 -mx-4 h-full", className)}>
         <Card className="bg-secondary">
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
@@ -198,16 +202,18 @@ export function PatientForm({
           disabled={readOnly}
         />
       </div>
-      <DialogFooter className="pt-6">
-        <div className="w-full flex justify-between">
-          <DialogClose asChild>
-            <Button variant={"ghost"}>Close</Button>
-          </DialogClose>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Submitting..." : "Submit Form"}
-          </Button>
-        </div>
-      </DialogFooter>
+      {readOnly ? null : (
+        <DialogFooter className="pt-6">
+          <div className="w-full flex justify-between">
+            <DialogClose asChild>
+              <Button variant={"ghost"}>Close</Button>
+            </DialogClose>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit Form"}
+            </Button>
+          </div>
+        </DialogFooter>
+      )}
     </form>
   );
 }

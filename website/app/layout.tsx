@@ -19,10 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${bricolageGrotesque.className} antialiased`}>
         <MainHeader />
-        <div className="p-3">{children}</div>
+        <div className="px-3">{children}</div>
       </body>
     </html>
   );

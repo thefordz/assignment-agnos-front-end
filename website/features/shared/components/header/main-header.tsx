@@ -20,7 +20,7 @@ export function MainHeader() {
         <div className="h-full w-full max-w-7xl mx-auto flex items-center justify-between px-3">
           <Logo />
           <div>
-            <Button onClick={handleDialogOpen} variant={"outline"}>
+            <Button onClick={handleDialogOpen} variant={"secondary"}>
               <FilePlus />
               Register Now
             </Button>
@@ -36,6 +36,7 @@ export function MainHeader() {
       >
         <PatientForm
           initialValues={initialValues}
+          className="no-scrollbar  max-h-[50vh] overflow-y-auto "
           onSubmit={() => {
             setOpen(false);
           }}
