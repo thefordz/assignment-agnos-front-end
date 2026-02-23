@@ -20,7 +20,7 @@ export function PatientLiveDialog({ open, onOpenChange, patient }: Props) {
       title="Patient Form"
       description="Please fill in the patient information below."
     >
-      <PatientForm key={patient.id} initialValues={patient.values} readOnly />
+      <PatientForm initialValues={patient.values} readOnly />
     </DialogWrapper>
   );
 }
