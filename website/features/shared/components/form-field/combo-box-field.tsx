@@ -60,7 +60,10 @@ export function ComboBoxField<T extends FieldValues>({
               >
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent
+                className="max-h-60 overflow-y-auto"
+                position="popper"
+              >
                 {options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}

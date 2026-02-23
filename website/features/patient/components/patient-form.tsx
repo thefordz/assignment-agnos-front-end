@@ -40,7 +40,7 @@ interface PatientFormProps {
 export function PatientForm({
   initialValues,
   readOnly = false,
-  className = "no-scrollbar  max-h-[50vh] overflow-y-auto ",
+  className = "no-scrollbar  max-h-[50vh] overflow-y-auto overscroll-contain ",
   onChangeDraft,
   onSubmit,
 }: PatientFormProps) {
