@@ -3,15 +3,30 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://assignment-agnos-front-end.vercel.app",
+];
+
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: true,
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
   },
+});
+app.get("/", (req, res) => {
+  res.send("Socket Server is running ");
 });
 
 io.on("connection", (socket) => {
@@ -59,4 +74,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => console.log("Socket server running on port 4000"));
+const PORT = process.env.PORT || 4000;
+
+server.listen(PORT, () => {
+  console.log(`Socket server running on port ${PORT}`);
+});
