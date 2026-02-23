@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getSocket } from "@/lib/socket";
 import { useIDSession } from "@/features/shared/components/providers/id-session-provider";
 import { useDebounce } from "use-debounce";
@@ -45,6 +45,7 @@ export function PatientForm({
   onSubmit,
 }: PatientFormProps) {
   const { id } = useIDSession();
+  const statusRef = useRef<"active" | "submitted">("active");
 
   const defaultValues = {
     firstName: initialValues?.firstName ?? "",
@@ -96,6 +97,8 @@ export function PatientForm({
     });
 
     return () => {
+      if (statusRef.current === "submitted") return;
+
       socket.emit("patient:close", {
         id,
         status: "inactive",
@@ -121,6 +124,8 @@ export function PatientForm({
 
   async function handleSubmit() {
     const socket = getSocket();
+
+    statusRef.current = "submitted";
 
     socket.emit("patient:submit", {
       id,
