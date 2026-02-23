@@ -5,9 +5,16 @@ let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
 const SocketURL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
+if (!SocketURL) {
+  throw new Error("NEXT_PUBLIC_SOCKET_URL is not defined");
+}
+
 export function connectSocket() {
   if (!socket) {
-    socket = io(SocketURL);
+    socket = io(SocketURL, {
+      transports: ["websocket"],
+      withCredentials: true,
+    });
   }
   return socket;
 }
