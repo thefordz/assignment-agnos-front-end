@@ -8,7 +8,7 @@ import { LivePatient } from "@/lib/types";
 import { ArrowUpDown } from "lucide-react";
 
 export const columns = (
-  onOpen: (patient: LivePatient) => void,
+  setSelectedPatientId: (id: string) => void,
 ): ColumnDef<LivePatient>[] => [
   {
     id: "action",
@@ -20,7 +20,7 @@ export const columns = (
           size="sm"
           variant="outline"
           className="text-xs hover:bg-muted"
-          onClick={() => onOpen(row.original)}
+          onClick={() => setSelectedPatientId(row.original.id)}
         >
           View Live
         </Button>

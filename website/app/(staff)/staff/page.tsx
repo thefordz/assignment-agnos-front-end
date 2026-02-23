@@ -12,7 +12,7 @@ import {
   PatientUpdateFormPayload,
 } from "@/types/socket";
 import { Plug } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function StaffPage() {
   const { id } = useIDSession();
@@ -23,9 +23,9 @@ export default function StaffPage() {
     "two-panel-view",
   );
 
-  const [selectedPatient, setSelectedPatient] = useState<LivePatient | null>(
-    null,
-  );
+  const [selectedPatientId, setSelectedPatientId] = React.useState<
+    string | null
+  >(null);
 
   function handleConnect() {
     const socket = connectSocket();
@@ -141,8 +141,8 @@ export default function StaffPage() {
       <StaffView
         view={view}
         patients={patients}
-        selectedPatient={selectedPatient}
-        setSelectedPatient={setSelectedPatient}
+        selectedPatientId={selectedPatientId}
+        setSelectedPatientId={setSelectedPatientId}
       />
     </div>
   );
