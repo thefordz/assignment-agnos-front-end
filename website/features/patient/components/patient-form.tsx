@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { patientFormSchema, PatientFormValues } from "../lib/validation";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
 import { useIDSession } from "@/features/shared/components/providers/id-session-provider";
 import { useDebounce } from "use-debounce";
@@ -45,7 +45,7 @@ export function PatientForm({
   onSubmit,
 }: PatientFormProps) {
   const { id } = useIDSession();
-  const statusRef = useRef<"active" | "submitted">("active");
+  const [status, setStatus] = useState<"active" | "submitted">("active");
 
   const defaultValues = {
     firstName: initialValues?.firstName ?? "",
@@ -72,7 +72,9 @@ export function PatientForm({
     mode: "onChange",
   });
 
-  const watchedValues = form.watch();
+  const watchedValues = useWatch({
+    control: form.control,
+  });
   const [debouncedValues] = useDebounce(watchedValues, 250);
 
   useEffect(() => {
@@ -85,6 +87,7 @@ export function PatientForm({
   //update status when open & close
   useEffect(() => {
     if (readOnly) return;
+    if (!debouncedValues) return;
 
     const socket = getSocket();
 
@@ -97,7 +100,7 @@ export function PatientForm({
     });
 
     return () => {
-      if (statusRef.current === "submitted") return;
+      if (status === "submitted") return;
 
       socket.emit("patient:close", {
         id,
@@ -125,12 +128,11 @@ export function PatientForm({
   async function handleSubmit() {
     const socket = getSocket();
 
-    statusRef.current = "submitted";
+    setStatus("submitted");
 
     socket.emit("patient:submit", {
       id,
       status: "submitted",
-      submittedAt: Date.now(),
     });
     onSubmit?.();
   }
