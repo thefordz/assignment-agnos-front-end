@@ -8,13 +8,27 @@ import { FilePlus } from "lucide-react";
 
 import { PatientFormValues } from "@/features/patient/lib/validation";
 import Link from "next/link";
+import { useIDSession } from "../providers/id-session-provider";
+import { getSocket } from "@/lib/socket";
 
 export function MainHeader() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Partial<PatientFormValues>>({});
 
-  function handleDialogOpen() {
-    setOpen((prev) => !prev);
+  const { id } = useIDSession();
+
+  function handleDialogChange(next: boolean) {
+    if (!next) {
+      const socket = getSocket();
+
+      socket.emit("patient:close", {
+        id,
+        status: "inactive",
+        lastActivityAt: Date.now(),
+      });
+    }
+
+    setOpen(next);
   }
 
   return (
@@ -23,7 +37,7 @@ export function MainHeader() {
         <div className="h-full w-full max-w-7xl mx-auto flex items-center justify-between px-3">
           <Logo />
           <div className="flex items-center gap-3">
-            <Button onClick={handleDialogOpen} variant={"secondary"}>
+            <Button onClick={() => setOpen(true)} variant={"secondary"}>
               <FilePlus />
               Register Now
             </Button>
@@ -36,7 +50,7 @@ export function MainHeader() {
 
       <DialogWrapper
         open={open}
-        onOpenChange={handleDialogOpen}
+        onOpenChange={handleDialogChange}
         title="Patient Form"
         description="Please fill in the patient information below."
       >

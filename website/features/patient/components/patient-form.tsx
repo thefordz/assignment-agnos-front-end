@@ -45,7 +45,6 @@ export function PatientForm({
   onSubmit,
 }: PatientFormProps) {
   const { id } = useIDSession();
-  const [status, setStatus] = useState<"active" | "submitted">("active");
 
   const defaultValues = {
     firstName: initialValues?.firstName ?? "",
@@ -98,16 +97,6 @@ export function PatientForm({
       createdAt: Date.now(),
       lastUpdated: Date.now(),
     });
-
-    return () => {
-      if (status === "submitted") return;
-
-      socket.emit("patient:close", {
-        id,
-        status: "inactive",
-        lastActivityAt: Date.now(),
-      });
-    };
   }, [id, readOnly]);
 
   //update values and save data as draft
@@ -123,12 +112,20 @@ export function PatientForm({
       values: debouncedValues,
       lastUpdated: Date.now(),
     });
-  }, [form, id, readOnly, debouncedValues]);
+  }, [id, readOnly, debouncedValues]);
+
+  function handleClose() {
+    const socket = getSocket();
+
+    socket.emit("patient:close", {
+      id,
+      status: "inactive",
+      lastActivityAt: Date.now(),
+    });
+  }
 
   async function handleSubmit() {
     const socket = getSocket();
-
-    setStatus("submitted");
 
     socket.emit("patient:submit", {
       id,
@@ -276,7 +273,7 @@ export function PatientForm({
       {readOnly ? null : (
         <DialogFooter className="pt-6">
           <div className="w-full flex justify-between">
-            <DialogClose asChild>
+            <DialogClose asChild onClick={handleClose}>
               <Button variant={"ghost"}>Close</Button>
             </DialogClose>
             <Button type="submit" disabled={isLoading}>
