@@ -15,6 +15,8 @@ export function MainHeader() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Partial<PatientFormValues>>({});
 
+  const [isSubmitted, setIsSubmiited] = useState(false);
+
   const { id } = useIDSession();
 
   function handleDialogChange(next: boolean) {
@@ -31,13 +33,17 @@ export function MainHeader() {
     setOpen(next);
   }
 
+  function handelOpenDialog() {
+    setOpen(true);
+  }
+
   return (
     <>
       <header className="h-16 w-full border-b sticky top-0 z-50 bg-background">
         <div className="h-full w-full max-w-7xl mx-auto flex items-center justify-between px-3">
           <Logo />
           <div className="flex items-center gap-3">
-            <Button onClick={() => setOpen(true)} variant={"secondary"}>
+            <Button onClick={handelOpenDialog} variant={"secondary"}>
               <FilePlus />
               Register Now
             </Button>
@@ -57,8 +63,10 @@ export function MainHeader() {
         <PatientForm
           initialValues={draft}
           onChangeDraft={setDraft}
+          readOnly={isSubmitted}
           onSubmit={() => {
             setOpen(false);
+            setIsSubmiited(true);
           }}
         />
       </DialogWrapper>
