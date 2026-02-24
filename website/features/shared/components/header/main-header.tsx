@@ -21,20 +21,17 @@ export function MainHeader() {
 
   function handleDialogChange(next: boolean) {
     if (!next) {
-      const socket = getSocket();
-
-      socket.emit("patient:close", {
-        id,
-        status: "inactive",
-        lastActivityAt: Date.now(),
-      });
+      if (!isSubmitted) {
+        const socket = getSocket();
+        socket.emit("patient:close", {
+          id,
+          status: "inactive",
+          lastActivityAt: Date.now(),
+        });
+      }
     }
 
     setOpen(next);
-  }
-
-  function handelOpenDialog() {
-    setOpen(true);
   }
 
   return (
@@ -43,7 +40,7 @@ export function MainHeader() {
         <div className="h-full w-full max-w-7xl mx-auto flex items-center justify-between px-3">
           <Logo />
           <div className="flex items-center gap-3">
-            <Button onClick={handelOpenDialog} variant={"secondary"}>
+            <Button onClick={() => setOpen(true)} variant={"secondary"}>
               <FilePlus />
               Register Now
             </Button>
@@ -65,8 +62,8 @@ export function MainHeader() {
           onChangeDraft={setDraft}
           readOnly={isSubmitted}
           onSubmit={() => {
-            setOpen(false);
             setIsSubmiited(true);
+            setOpen(false);
           }}
         />
       </DialogWrapper>
