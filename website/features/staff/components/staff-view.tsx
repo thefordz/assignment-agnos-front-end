@@ -11,6 +11,7 @@ interface StaffViewProps {
   patients: LivePatient[];
   selectedPatientId: string | null;
   setSelectedPatientId: (id: string | null) => void;
+  onDeletePatient: (id: string) => void;
 }
 
 export function StaffView({
@@ -18,6 +19,7 @@ export function StaffView({
   patients,
   selectedPatientId,
   setSelectedPatientId,
+  onDeletePatient,
 }: StaffViewProps) {
   const selectedPatient = React.useMemo(
     () => patients.find((p) => p.id === selectedPatientId) ?? null,
@@ -25,9 +27,10 @@ export function StaffView({
   );
 
   const memoColumns = React.useMemo(
-    () => columns((patient) => setSelectedPatientId(patient)),
-    [setSelectedPatientId],
+    () => columns((id) => setSelectedPatientId(id), onDeletePatient),
+    [setSelectedPatientId, onDeletePatient],
   );
+
   return (
     <div>
       {view === "two-panel-view" ? (

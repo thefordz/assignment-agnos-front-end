@@ -5,25 +5,34 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatTimeAgo } from "@/lib/utils";
 import { PatientStatusBadge } from "../patient-status-badge";
 import { LivePatient } from "@/lib/types";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Trash } from "lucide-react";
 
 export const columns = (
   setSelectedPatientId: (id: string) => void,
+  onDelete: (id: string) => void,
 ): ColumnDef<LivePatient>[] => [
   {
     id: "action",
     header: "Live View",
     enableHiding: false,
     cell: ({ row }) => {
+      const id = row.original.id;
+
       return (
-        <Button
-          size="sm"
-          variant="outline"
-          className="text-xs hover:bg-muted"
-          onClick={() => setSelectedPatientId(row.original.id)}
-        >
-          View Live
-        </Button>
+        <div className="flex gap-2 items-center">
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs hover:bg-muted"
+            onClick={() => setSelectedPatientId(row.original.id)}
+          >
+            View Live
+          </Button>
+
+          <Button size="sm" variant="destructive" onClick={() => onDelete(id)}>
+            <Trash className="w-4 h-4" />
+          </Button>
+        </div>
       );
     },
   },

@@ -22,6 +22,7 @@ export default function StaffPage() {
   const [view, setView] = useState<"data-table-view" | "two-panel-view">(
     "two-panel-view",
   );
+  console.log(patients);
 
   const [selectedPatientId, setSelectedPatientId] = React.useState<
     string | null
@@ -41,12 +42,16 @@ export default function StaffPage() {
     setPatients((prev) => {
       const exists = prev.some((p) => p.id === data.id);
 
+      const first = data.values?.firstName ?? "";
+      const last = data.values?.lastName ?? "";
+
       if (exists) {
         return prev.map((p) =>
           p.id === data.id
             ? {
                 ...p,
                 status: "active",
+                name: `${first} ${last}`.trim() || "Unnamed Patient",
                 lastUpdated: Date.now(),
                 lastActivityAt: Date.now(),
               }
@@ -84,6 +89,7 @@ export default function StaffPage() {
           ? {
               ...p,
               lastUpdated: data.lastUpdated,
+              name: `${data.values.firstName} ${data.values.lastName}`,
               values: {
                 ...p.values,
                 ...data.values,
@@ -135,6 +141,10 @@ export default function StaffPage() {
     );
   }
 
+  function handleDelete(id: string) {
+    setPatients(patients.filter((p) => p.id !== id));
+  }
+
   return (
     <div>
       <StaffHeader view={view} setView={setView} />
@@ -143,6 +153,7 @@ export default function StaffPage() {
         patients={patients}
         selectedPatientId={selectedPatientId}
         setSelectedPatientId={setSelectedPatientId}
+        onDeletePatient={handleDelete}
       />
     </div>
   );

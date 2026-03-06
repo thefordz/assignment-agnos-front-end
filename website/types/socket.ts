@@ -31,7 +31,7 @@ export interface PatientOpenFormPayload {
   createdAt: number;
   lastUpdated: number;
 
-  values?: PatientFormValues;
+  values: Partial<PatientFormValues>;
 }
 
 export interface PatientCloseFormPayload {
